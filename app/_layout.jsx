@@ -6,6 +6,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import store from '../store';
 
 /////////////////  Routs  //////////////////
+//////////////// Routs ////////////////
+/////////////// routs ////////////////
 
 export default function RootLayout() {
   return (
