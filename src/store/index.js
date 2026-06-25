@@ -4,6 +4,7 @@ import residentReducer from './slices/residentSlice';
 import visitorReducer from './slices/visitorSlice';
 import maintenanceReducer from './slices/maintenanceSlice';
 import noticeReducer from './slices/noticeSlice';
+import societyReducer from './slices/societySlice';
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     visitors: visitorReducer,
     maintenance: maintenanceReducer,
     notices: noticeReducer,
+    societies: societyReducer,
   },
 });
 

@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+﻿import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import colors from '../theme/colors';
-import { APP_CONFIG } from '../constants/appConfig';
+import colors from '../src/theme/colors';
+import { APP_CONFIG } from '../src/constants/appConfig';
 
 const { width, height } = Dimensions.get('window');
 

@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import ScreenWrapper from '../../components/common/ScreenWrapper';
-import Header from '../../components/common/Header';
-import { saveProfile, loadProfile } from '../../services/storageService';
-import { APP_CONFIG } from '../../constants/appConfig';
-import colors from '../../theme/colors';
+import ScreenWrapper from '../../src/components/common/ScreenWrapper';
+import Header from '../../src/components/common/Header';
+import { saveProfile, loadProfile } from '../../src/services/storageService';
+import { APP_CONFIG } from '../../src/constants/appConfig';
+import colors from '../../src/theme/colors';
 
 const DEFAULT_PROFILE = {
   name: 'Resident Name',

@@ -1,12 +1,12 @@
-import React from 'react';
+﻿import React from 'react';
 import { View, FlatList, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import ScreenWrapper from '../../components/common/ScreenWrapper';
-import Header from '../../components/common/Header';
-import SearchInput from '../../components/inputs/SearchInput';
-import VisitorCard from '../../components/cards/VisitorCard';
-import EmptyState from '../../components/common/EmptyState';
-import { useVisitors } from '../../hooks/useVisitors';
-import colors from '../../theme/colors';
+import ScreenWrapper from '../../src/components/common/ScreenWrapper';
+import Header from '../../src/components/common/Header';
+import SearchInput from '../../src/components/inputs/SearchInput';
+import VisitorCard from '../../src/components/cards/VisitorCard';
+import EmptyState from '../../src/components/common/EmptyState';
+import { useVisitors } from '../../src/hooks/useVisitors';
+import colors from '../../src/theme/colors';
 
 const FILTERS = ['All', 'In', 'Out'];
 

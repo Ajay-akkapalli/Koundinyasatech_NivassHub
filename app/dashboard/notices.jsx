@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import ScreenWrapper from '../../components/common/ScreenWrapper';
-import Header from '../../components/common/Header';
-import NoticeCard from '../../components/cards/NoticeCard';
-import EmptyState from '../../components/common/EmptyState';
-import { markNoticeRead } from '../../store/slices/noticeSlice';
-import colors from '../../theme/colors';
+import ScreenWrapper from '../../src/components/common/ScreenWrapper';
+import Header from '../../src/components/common/Header';
+import NoticeCard from '../../src/components/cards/NoticeCard';
+import EmptyState from '../../src/components/common/EmptyState';
+import { markNoticeRead } from '../../src/store/slices/noticeSlice';
+import colors from '../../src/theme/colors';
 
 const TABS = ['Notices', 'Announcements', 'Notifications'];
 

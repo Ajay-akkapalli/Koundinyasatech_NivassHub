@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import {
   View,
   Text,
@@ -9,12 +9,13 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useDashboard } from '../../hooks/useDashboard';
+import { useDashboard } from '../../src/hooks/useDashboard';
 import { useSelector } from 'react-redux';
-import ScreenWrapper from '../../components/common/ScreenWrapper';
-import DashboardCard from '../../components/cards/DashboardCard';
-import { formatCurrency } from '../../utils/helpers';
-import colors from '../../theme/colors';
+import ScreenWrapper from '../../src/components/common/ScreenWrapper';
+import DashboardCard from '../../src/components/cards/DashboardCard';
+import { formatCurrency } from '../../src/utils/helpers';
+import colors from '../../src/theme/colors';
+import { HomeIcon } from '../../assets/icons/HomeIcon';
 
 const NAV_MODULES = [
   { label: 'Residents', icon: 'people', route: '/dashboard/residents', color: '#3949AB' },
@@ -22,6 +23,7 @@ const NAV_MODULES = [
   { label: 'Maintenance', icon: 'build', route: '/dashboard/maintenance', color: '#E65100' },
   { label: 'Amenities', icon: 'home', route: '/dashboard/amenities', color: '#6A1B9A' },
   { label: 'Notices', icon: 'notifications', route: '/dashboard/notices', color: '#C62828' },
+  { label: 'Societies', icon: 'business', route: '/society', color: '#FF9800' },
   { label: 'Profile', icon: 'person-circle', route: '/profile', color: '#00695C' },
   { label: 'Settings', icon: 'settings', route: '/dashboard/settings', color: '#4527A0' },
 ];
@@ -97,6 +99,7 @@ export default function Dashboard() {
         />
 
         <Text style={styles.sectionTitle}>Quick Access</Text>
+        <HomeIcon width={24} height={24} />
         <View style={styles.grid}>
           {NAV_MODULES.map((mod) => (
             <TouchableOpacity

@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import ScreenWrapper from '../../components/common/ScreenWrapper';
-import Header from '../../components/common/Header';
-import { saveSettings, loadSettings } from '../../services/storageService';
-import { APP_CONFIG } from '../../constants/appConfig';
-import colors from '../../theme/colors';
+import ScreenWrapper from '../../src/components/common/ScreenWrapper';
+import Header from '../../src/components/common/Header';
+import { saveSettings, loadSettings } from '../../src/services/storageService';
+import { APP_CONFIG } from '../../src/constants/appConfig';
+import colors from '../../src/theme/colors';
 
 function SettingRow({ icon, label, value, onValueChange, type = 'toggle', onPress, valueLabel }) {
   return (

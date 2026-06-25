@@ -1,14 +1,14 @@
-import React from 'react';
+﻿import React from 'react';
 import { View, FlatList, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import ScreenWrapper from '../../components/common/ScreenWrapper';
-import Header from '../../components/common/Header';
-import SearchInput from '../../components/inputs/SearchInput';
-import EmptyState from '../../components/common/EmptyState';
-import { useMaintenance } from '../../hooks/useMaintenance';
-import { getStatusColor } from '../../utils/helpers';
-import { formatDate } from '../../utils/dateUtils';
-import colors from '../../theme/colors';
+import ScreenWrapper from '../../src/components/common/ScreenWrapper';
+import Header from '../../src/components/common/Header';
+import SearchInput from '../../src/components/inputs/SearchInput';
+import EmptyState from '../../src/components/common/EmptyState';
+import { useMaintenance } from '../../src/hooks/useMaintenance';
+import { getStatusColor } from '../../src/utils/helpers';
+import { formatDate } from '../../src/utils/dateUtils';
+import colors from '../../src/theme/colors';
 
 const FILTERS = ['All', 'Open', 'In Progress', 'Resolved'];
 

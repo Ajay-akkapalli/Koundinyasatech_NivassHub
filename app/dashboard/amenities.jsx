@@ -1,12 +1,12 @@
-import React from 'react';
+﻿import React from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
-import ScreenWrapper from '../../components/common/ScreenWrapper';
-import Header from '../../components/common/Header';
-import { getStatusColor } from '../../utils/helpers';
-import colors from '../../theme/colors';
-import amenitiesData from '../../data/amenities.json';
+import ScreenWrapper from '../../src/components/common/ScreenWrapper';
+import Header from '../../src/components/common/Header';
+import { getStatusColor } from '../../src/utils/helpers';
+import colors from '../../src/theme/colors';
+import amenitiesData from '../../src/data/amenities.json';
 
 function AmenityCard({ amenity }) {
   const statusColor = getStatusColor(amenity.status);
