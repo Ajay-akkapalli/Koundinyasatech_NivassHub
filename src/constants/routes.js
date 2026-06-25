@@ -8,4 +8,7 @@ export const ROUTES = {
   NOTICES: '/dashboard/notices',
   SETTINGS: '/dashboard/settings',
   PROFILE: '/profile',
+  WELCOME:'/welcome',
+  LOGIN:'/login',
+  REGISTER:'/register'
 };
