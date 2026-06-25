@@ -3,6 +3,7 @@
 **Modern Society Management Platform**
 
 Developed by Koundinyasatech
+npm install expo@~54.0.0 --legacy-peer-deps
 
 ---
 
