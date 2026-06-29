@@ -1,7 +1,0 @@
-export const isValidPhone = (phone) => /^[6-9]\d{9}$/.test(phone);
-
-export const isValidEmail = (email) =>
-  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
-export const isNotEmpty = (value) =>
-  value !== null && value !== undefined && String(value).trim().length > 0;
