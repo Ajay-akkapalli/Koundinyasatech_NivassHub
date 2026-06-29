@@ -19,6 +19,11 @@ const colors = {
   textLight: '#BDBDBD',
   card: '#FFFFFF',
   shadow: '#000000',
+  brandBlue: '#0060BD',
+  brandDark: '#082B68',
+  splashGradientStart: '#64B5F6',
+  splashGradientEnd: '#1565C0',
+  splashAccent: '#F3B05B',
 } as const;
 
 export type ColorKey = keyof typeof colors;

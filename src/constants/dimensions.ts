@@ -1,0 +1,31 @@
+import { Dimensions } from 'react-native';
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+
+export const SPLASH = {
+  LOGO_ICON_SIZE: 110,
+  LOGO_CIRCLE_SIZE: 160,
+  LOGO_CIRCLE_BORDER_WIDTH: 4,
+  LOGO_FULL_SIZE: 220,
+  LINE_MAX_HEIGHT: 140,
+  LINE_WIDTH: 3,
+  BUTTON_HEIGHT: 52,
+  BUTTON_BORDER_RADIUS: 8,
+  BUTTON_BORDER_WIDTH: 1.5,
+  SCREEN_1_DURATION: 700,
+  SCREEN_2_DURATION: 800,
+  ANIMATION_DURATION: 2000,
+  NAVIGATION_DELAY: 2500,
+  LOGO_FADE_DURATION: 800,
+  LINE_DELAY: 500,
+  LINE_GROW_DURATION: 1000,
+} as const;
+
+const dimensions = {
+  SCREEN_WIDTH,
+  SCREEN_HEIGHT,
+  SPLASH,
+} as const;
+
+export default dimensions;
+export { SCREEN_WIDTH, SCREEN_HEIGHT };
