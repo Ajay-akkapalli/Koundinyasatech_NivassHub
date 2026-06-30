@@ -13,3 +13,5 @@ web-build/
 *.env.local
 .claude/
 .vscode/
+android/
+ios/
