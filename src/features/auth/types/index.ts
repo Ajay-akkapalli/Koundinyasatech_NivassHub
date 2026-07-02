@@ -1,15 +1,14 @@
 export type UserRole = 'admin' | 'resident' | 'security';
 
 export interface User {
-  id: string;
-  name: string;
+  userId: string;
+  fullName: string;
   email: string;
-  phone: string;
-  flat: string;
-  block: string;
+  mobileNumber: string;
+  address: string;
   role: UserRole;
   avatarUrl?: string;
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface AuthToken {
@@ -34,11 +33,10 @@ export interface LoginFormData {
 }
 
 export interface RegisterFormData {
-  name: string;
+  fullName: string;
   email: string;
-  phone: string;
-  flat: string;
-  block: string;
+  mobileNumber: string;
+  address: string;
   password: string;
   confirmPassword: string;
 }
@@ -60,6 +58,20 @@ export interface ResetPasswordFormData {
 
 // ── API responses ────────────────────────────────────────────────────────────
 
+/**
+ * Raw shape returned by POST /auth/register and POST /auth/login.
+ * Mapped to AuthResponse inside authApi before the rest of the app sees it.
+ */
+export interface RegisterApiResponse {
+  success: boolean;
+  message: string;
+  data: {
+    userId: string;
+    accessToken: string;
+    refreshToken: string;
+  };
+}
+
 export interface AuthResponse {
   user: User;
   token: AuthToken;
@@ -79,11 +91,10 @@ export interface LoginFormErrors {
 }
 
 export interface RegisterFormErrors {
-  name?: string;
+  fullName?: string;
   email?: string;
-  phone?: string;
-  flat?: string;
-  block?: string;
+  mobileNumber?: string;
+  address?: string;
   password?: string;
   confirmPassword?: string;
 }

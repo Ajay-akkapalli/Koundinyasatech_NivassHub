@@ -1,136 +1,170 @@
-import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ImageBackground,
-  TouchableOpacity,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useEffect, useRef, useCallback } from 'react';
+import { View, Text, StyleSheet, Animated, TouchableOpacity } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SplashLogo from '@components/splash/SplashLogo';
 import colors from '@theme/colors';
-import spacing from '@theme/spacing';
-import { SPLASH } from '@constants/dimensions';
 
 export default function WelcomeScreen(): React.JSX.Element {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(32)).current;
+  const btnAnim = useRef(new Animated.Value(0)).current;
 
-  const handleRegister = (): void => {
-    router.replace('/(auth)/register');
-  };
+  useEffect(() => {
+    Animated.sequence([
+      Animated.parallel([
+        Animated.timing(fadeAnim, { toValue: 1, duration: 750, useNativeDriver: true }),
+        Animated.timing(slideAnim, { toValue: 0, duration: 750, useNativeDriver: true }),
+      ]),
+      Animated.timing(btnAnim, { toValue: 1, duration: 400, delay: 200, useNativeDriver: true }),
+    ]).start();
+  }, []);
 
-  const handleLogin = (): void => {
-    router.replace('/(auth)/login');
-  };
+  const handleContinue = useCallback(() => {
+    router.replace('/splash/onboarding' as any);
+  }, [router]);
 
   return (
-    <ImageBackground
-      source={require('../../assets/images/Splash screen img.png')}
-      style={styles.background}
-      resizeMode="cover"
-      blurRadius={2}
+    <LinearGradient
+      colors={[colors.primary, colors.brandBlue]}
+      style={styles.container}
+      start={{ x: 0.3, y: 0 }}
+      end={{ x: 0.7, y: 1 }}
     >
-      <StatusBar style="dark" />
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.overlay}>
-          <View style={styles.logoContainer}>
-            <SplashLogo variant="full" size={SPLASH.LOGO_FULL_SIZE} />
-          </View>
+      <StatusBar style="light" />
 
-          <View style={styles.textContainer}>
-            <Text style={styles.title}>Welcome!</Text>
-            <Text style={styles.subtitle}>To NivaasHub</Text>
-          </View>
+      {/* Decorative circles */}
+      <View style={[styles.circle, { width: 260, height: 260, top: -75, right: -75 }]} />
+      <View style={[styles.circle, { width: 320, height: 320, bottom: -110, left: -110 }]} />
+      <View style={[styles.circle, { width: 160, height: 160, top: '38%', right: -55, backgroundColor: 'rgba(255,255,255,0.04)' }]} />
 
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.registerButton}
-              onPress={handleRegister}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.registerButtonText}>Register</Text>
-            </TouchableOpacity>
+      {/* Logo + text */}
+      <Animated.View
+        style={[styles.content, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}
+      >
+        <SplashLogo variant="full" size={200} />
 
-            <TouchableOpacity
-              style={styles.loginButton}
-              onPress={handleLogin}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.loginButtonText}>Login</Text>
-            </TouchableOpacity>
-          </View>
+        <View style={styles.textBlock}>
+          <Text style={styles.eyebrow}>WELCOME TO</Text>
+          <Text style={styles.appName}>NivaasHub</Text>
+          <View style={styles.divider} />
+          <Text style={styles.tagline}>Modern Society Management</Text>
         </View>
-      </SafeAreaView>
-    </ImageBackground>
+
+        {/* Feature pills */}
+        <View style={styles.pillRow}>
+          {['Payments', 'Visitors', 'Community'].map((label) => (
+            <View key={label} style={styles.pill}>
+              <Text style={styles.pillText}>{label}</Text>
+            </View>
+          ))}
+        </View>
+      </Animated.View>
+
+      {/* CTA button */}
+      <Animated.View style={[styles.btnWrap, { opacity: btnAnim, paddingBottom: insets.bottom + 32 }]}>
+        <TouchableOpacity style={styles.ctaBtn} onPress={handleContinue} activeOpacity={0.82}>
+          <Text style={styles.ctaBtnText}>Get Started  →</Text>
+        </TouchableOpacity>
+        <Text style={styles.hintText}>Swipe through to explore features</Text>
+      </Animated.View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  background: {
+  container: {
     flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.75)',
-    paddingHorizontal: spacing.screenPadding + spacing.md,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.xl,
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  logoContainer: {
+  circle: {
+    position: 'absolute',
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    borderRadius: 999,
+  },
+  content: {
     alignItems: 'center',
-    marginTop: spacing.lg,
+    paddingHorizontal: 32,
   },
-  textContainer: {
+  textBlock: {
     alignItems: 'center',
+    marginTop: 34,
   },
-  title: {
-    fontSize: 30,
-    fontWeight: '700',
-    color: colors.brandDark,
-    marginBottom: spacing.xs,
-    textAlign: 'center',
+  eyebrow: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: 'rgba(255,255,255,0.65)',
+    letterSpacing: 3,
+    marginBottom: 8,
   },
-  subtitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.brandDark,
-    textAlign: 'center',
+  appName: {
+    fontSize: 40,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
+    marginBottom: 16,
   },
-  buttonContainer: {
+  divider: {
+    width: 44,
+    height: 2.5,
+    borderRadius: 2,
+    backgroundColor: colors.splashAccent,
+    marginBottom: 14,
+  },
+  tagline: {
+    fontSize: 14,
+    fontWeight: '400',
+    color: 'rgba(255,255,255,0.60)',
+    letterSpacing: 0.6,
+  },
+  pillRow: {
+    flexDirection: 'row',
+    marginTop: 28,
+    gap: 8,
+  },
+  pill: {
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.22)',
+  },
+  pillText: {
+    color: 'rgba(255,255,255,0.85)',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  btnWrap: {
+    position: 'absolute',
+    bottom: 0,
+    alignItems: 'center',
+    paddingHorizontal: 32,
     width: '100%',
   },
-  registerButton: {
-    backgroundColor: colors.brandBlue,
-    height: SPLASH.BUTTON_HEIGHT,
-    borderRadius: SPLASH.BUTTON_BORDER_RADIUS,
-    justifyContent: 'center',
+  ctaBtn: {
+    width: '100%',
+    paddingVertical: 16,
+    borderRadius: 30,
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
-    marginBottom: spacing.md + spacing.sm,
-  },
-  registerButtonText: {
-    color: colors.white,
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  loginButton: {
-    backgroundColor: colors.white,
-    height: SPLASH.BUTTON_HEIGHT,
-    borderRadius: SPLASH.BUTTON_BORDER_RADIUS,
-    borderWidth: SPLASH.BUTTON_BORDER_WIDTH,
-    borderColor: colors.brandBlue,
     justifyContent: 'center',
-    alignItems: 'center',
+    marginBottom: 12,
   },
-  loginButtonText: {
-    color: colors.brandBlue,
-    fontSize: 18,
-    fontWeight: '600',
+  ctaBtnText: {
+    color: colors.primary,
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: 0.3,
+  },
+  hintText: {
+    color: 'rgba(255,255,255,0.45)',
+    fontSize: 12,
+    fontWeight: '400',
   },
 });

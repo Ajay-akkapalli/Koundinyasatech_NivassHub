@@ -1,14 +1,12 @@
-/**
- * Centralized Axios instance.
- * Run `npm install axios` before connecting to a real backend.
- */
 import axios from 'axios';
 import { ENV } from '@/config/env';
 import { applyRequestInterceptor, applyResponseInterceptor } from './interceptors';
 
+console.log('[API] Base URL:', ENV.API_BASE_URL);
+
 export const apiClient = axios.create({
-  baseURL: ENV.API_BASE_URL || 'https://api.nivasshub.com/v1',
-  timeout: 10_000,
+  baseURL: ENV.API_BASE_URL,
+  timeout: 15_000,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',

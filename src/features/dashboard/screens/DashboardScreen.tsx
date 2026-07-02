@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   View,
   Text,
@@ -18,27 +18,35 @@ import colors from '@/theme/colors';
 import spacing from '@/theme/spacing';
 
 const NAV_MODULES = [
-  { label: 'Residents',    icon: 'people',          route: '/(tabs)/residents',   color: '#3949AB' },
-  { label: 'Visitors',     icon: 'person-add',      route: '/(tabs)/visitors',    color: '#00897B' },
-  { label: 'Maintenance',  icon: 'build',           route: '/(tabs)/maintenance', color: '#E65100' },
-  { label: 'Amenities',    icon: 'home',            route: '/(tabs)/amenities',   color: '#6A1B9A' },
-  { label: 'Notices',      icon: 'notifications',   route: '/(tabs)/notices',     color: '#C62828' },
-  { label: 'Societies',    icon: 'business',        route: '/(tabs)/society',     color: '#FF9800' },
-  { label: 'Profile',      icon: 'person-circle',   route: '/(tabs)/profile',     color: '#00695C' },
-  { label: 'Settings',     icon: 'settings',        route: '/(tabs)/settings',    color: '#4527A0' },
+  { label: 'Residents',   icon: 'people',          route: '/(tabs)/residents',   color: '#3949AB' },
+  { label: 'Visitors',    icon: 'person-add',      route: '/(tabs)/visitors',    color: '#00897B' },
+  { label: 'Maintenance', icon: 'build',           route: '/(tabs)/maintenance', color: '#E65100' },
+  { label: 'Amenities',   icon: 'home',            route: '/(tabs)/amenities',   color: '#6A1B9A' },
+  { label: 'Notices',     icon: 'notifications',   route: '/(tabs)/notices',     color: '#C62828' },
+  { label: 'Societies',   icon: 'business',        route: '/(tabs)/society',     color: '#FF9800' },
+  { label: 'Profile',     icon: 'person-circle',   route: '/(tabs)/profile',     color: '#00695C' },
+  { label: 'Settings',    icon: 'settings',        route: '/(tabs)/settings',    color: '#4527A0' },
 ] as const;
 
 export const DashboardScreen: React.FC = () => {
   const router = useRouter();
-  const { stats, recentActivities, loading, refresh } = useDashboard();
+  const { stats, recentActivities, refresh } = useDashboard();
   const unreadCount = useAppSelector((state) => state.notices.unreadCount);
-  const [refreshing, setRefreshing] = React.useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const onRefresh = () => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    refresh();
-    setTimeout(() => setRefreshing(false), 1000);
-  };
+    try {
+      await refresh();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refresh]);
+
+  const goToNotices = useCallback(() => router.push('/(tabs)/notices'), [router]);
+  const goToResidents = useCallback(() => router.push('/(tabs)/residents'), [router]);
+  const goToVisitors = useCallback(() => router.push('/(tabs)/visitors'), [router]);
+  const goToMaintenance = useCallback(() => router.push('/(tabs)/maintenance'), [router]);
 
   return (
     <ScreenWrapper>
@@ -49,7 +57,7 @@ export const DashboardScreen: React.FC = () => {
         </View>
         <TouchableOpacity
           style={styles.notifBtn}
-          onPress={() => router.push('/(tabs)/notices')}
+          onPress={goToNotices}
           accessibilityLabel="Notifications"
           accessibilityRole="button"
         >
@@ -79,21 +87,21 @@ export const DashboardScreen: React.FC = () => {
           value={stats.totalResidents}
           icon="people"
           color={colors.primary}
-          onPress={() => router.push('/(tabs)/residents')}
+          onPress={goToResidents}
         />
         <DashboardCard
           title="Total Flats"
           value={stats.totalFlats}
           icon="business"
           color="#00897B"
-          onPress={() => router.push('/(tabs)/residents')}
+          onPress={goToResidents}
         />
         <DashboardCard
           title="Active Visitors"
           value={stats.activeVisitors}
           icon="person-add"
           color="#E65100"
-          onPress={() => router.push('/(tabs)/visitors')}
+          onPress={goToVisitors}
         />
         <DashboardCard
           title="Monthly Collection"
@@ -106,25 +114,13 @@ export const DashboardScreen: React.FC = () => {
           value={stats.pendingComplaints}
           icon="warning"
           color="#C62828"
-          onPress={() => router.push('/(tabs)/maintenance')}
+          onPress={goToMaintenance}
         />
 
         <Text style={styles.sectionTitle}>Quick Access</Text>
         <View style={styles.grid}>
           {NAV_MODULES.map((mod) => (
-            <TouchableOpacity
-              key={mod.label}
-              style={styles.gridItem}
-              onPress={() => router.push(mod.route as any)}
-              activeOpacity={0.85}
-              accessibilityLabel={mod.label}
-              accessibilityRole="button"
-            >
-              <View style={[styles.gridIcon, { backgroundColor: mod.color + '18' }]}>
-                <Ionicons name={mod.icon as any} size={28} color={mod.color} />
-              </View>
-              <Text style={styles.gridLabel}>{mod.label}</Text>
-            </TouchableOpacity>
+            <NavModule key={mod.label} {...mod} router={router} />
           ))}
         </View>
 
@@ -145,6 +141,35 @@ export const DashboardScreen: React.FC = () => {
   );
 };
 
+/**
+ * Isolated grid item — memo prevents 8 items from re-rendering
+ * when the parent re-renders due to unrelated state changes.
+ */
+interface NavModuleProps {
+  label: string;
+  icon: string;
+  route: string;
+  color: string;
+  router: ReturnType<typeof useRouter>;
+}
+
+const NavModule = React.memo<NavModuleProps>(({ label, icon, route, color, router }) => (
+  <TouchableOpacity
+    style={styles.gridItem}
+    onPress={() => router.push(route as any)}
+    activeOpacity={0.85}
+    accessibilityLabel={label}
+    accessibilityRole="button"
+  >
+    <View style={[styles.gridIcon, { backgroundColor: color + '18' }]}>
+      <Ionicons name={icon as any} size={28} color={color} />
+    </View>
+    <Text style={styles.gridLabel}>{label}</Text>
+  </TouchableOpacity>
+));
+
+NavModule.displayName = 'NavModule';
+
 export default DashboardScreen;
 
 const styles = StyleSheet.create({
@@ -161,28 +186,53 @@ const styles = StyleSheet.create({
   appName: { color: colors.white, fontSize: 24, fontWeight: '800', letterSpacing: 0.5 },
   notifBtn: { position: 'relative', padding: 4 },
   badge: {
-    position: 'absolute', top: 0, right: 0,
-    backgroundColor: colors.secondary, borderRadius: 9,
-    minWidth: 18, height: 18, justifyContent: 'center', alignItems: 'center',
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: colors.secondary,
+    borderRadius: 9,
+    minWidth: 18,
+    height: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   badgeText: { color: colors.white, fontSize: 10, fontWeight: '700' },
   scroll: { padding: spacing.md, paddingBottom: 32 },
   sectionTitle: {
-    fontSize: 16, fontWeight: '700', color: colors.textPrimary,
-    marginBottom: 12, marginTop: 8,
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.textPrimary,
+    marginBottom: 12,
+    marginTop: 8,
   },
   grid: { flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -6, marginBottom: 8 },
   gridItem: { width: '25%', alignItems: 'center', paddingHorizontal: 6, marginBottom: 16 },
-  gridIcon: { width: 58, height: 58, borderRadius: 16, justifyContent: 'center', alignItems: 'center', marginBottom: 6 },
+  gridIcon: {
+    width: 58,
+    height: 58,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
   gridLabel: { fontSize: 11, color: colors.textSecondary, fontWeight: '500', textAlign: 'center' },
   activityItem: {
-    flexDirection: 'row', alignItems: 'flex-start', backgroundColor: colors.white,
-    borderRadius: 10, padding: 12, marginBottom: 8, elevation: 1,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: colors.white,
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 8,
+    elevation: 1,
   },
   activityIcon: {
-    width: 36, height: 36, borderRadius: 18,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: colors.primary + '15',
-    justifyContent: 'center', alignItems: 'center', marginRight: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
   },
   activityContent: { flex: 1 },
   activityMessage: { fontSize: 13, color: colors.textPrimary, lineHeight: 19 },

@@ -32,7 +32,7 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({ user }) => {
       <View style={styles.right}>
         <TouchableOpacity
           style={styles.iconBtn}
-          onPress={() => router.push('/(tabs)/notices' as any)}
+          onPress={() => router.push('/search' as any)}
           accessibilityLabel="Search"
           accessibilityRole="button"
         >

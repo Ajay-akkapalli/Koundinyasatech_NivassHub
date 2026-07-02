@@ -24,6 +24,9 @@ export interface ApprovalVisitor {
   visitorId: string;
   visitorName: string;
   flat: string;
+  visitorType?: string;
+  entryTime?: string;
+  photo?: string;
 }
 
 export interface HomeApiData {
@@ -33,6 +36,8 @@ export interface HomeApiData {
   maintenanceMessage: string;
   approvalQueueCount: number;
   approvalQueue: ApprovalVisitor[];
+  communityPosts?: CommunityPost[];
+  advertisements?: AdvertisementItem[];
 }
 
 export interface HomeApiResponse {
@@ -67,6 +72,34 @@ export interface RejectVisitorRequest {
 export interface ApiSuccessResponse {
   success: boolean;
   message: string;
+}
+
+// ─── Community Post ────────────────────────────────────────────────────────
+
+export interface CommunityPost {
+  postId: string;
+  category: string;
+  isAdmin?: boolean;
+  isAd?: boolean;
+  adSource?: string;
+  source: string;
+  timestamp: string;
+  title?: string;
+  content: string;
+  notificationCount?: number;
+  attachmentCount?: number;
+  image?: string;
+}
+
+// ─── Advertisement ─────────────────────────────────────────────────────────
+
+export interface AdvertisementItem {
+  adId: string;
+  brandName: string;
+  brandLogo?: string;
+  title: string;
+  description?: string;
+  image?: string;
 }
 
 // ─── Redux State ──────────────────────────────────────────────────────────

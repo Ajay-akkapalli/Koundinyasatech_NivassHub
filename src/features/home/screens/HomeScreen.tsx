@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import {
+  Alert,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -13,12 +14,18 @@ import colors from '@theme/colors';
 import spacing from '@theme/spacing';
 import { useHome } from '../hooks/useHome';
 import {
-  ApprovalQueue,
+  AdvertisementCard,
+  ApprovalQueueBottomSheet,
+  ApprovalQueueTrigger,
   BannerCarousel,
+  CommunityPostCard,
   HomeHeader,
   HomeSkeleton,
   MaintenanceNoticeCard,
+  QRCodeBanner,
   QuickActionsGrid,
+  SectionHeader,
+  SOSBanner,
 } from '../components';
 
 // ─── Error State ─────────────────────────────────────────────────────────────
@@ -59,19 +66,43 @@ export const HomeScreen: React.FC = () => {
     handleCallGuard,
   } = useHome();
 
+  const [queueSheetVisible, setQueueSheetVisible] = useState(false);
+
+  const openQueueSheet = useCallback(() => setQueueSheetVisible(true), []);
+  const closeQueueSheet = useCallback(() => setQueueSheetVisible(false), []);
+
+  const handleNewPost = useCallback(() => {
+    Alert.alert('New Post', 'Community post creation coming soon.');
+  }, []);
+
+  const handleQREntry = useCallback(() => {
+    Alert.alert('QR Entry', 'Your QR code will be shown here for contactless entry.');
+  }, []);
+
+  const handleSOS = useCallback(() => {
+    Alert.alert(
+      'SOS Emergency',
+      'This will immediately alert the security guard. Confirm?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Alert Guard', style: 'destructive', onPress: handleCallGuard },
+      ],
+    );
+  }, [handleCallGuard]);
+
   return (
     <ScreenWrapper>
       <HomeHeader user={data?.user ?? null} />
 
-      {/* Initial loading — show skeleton */}
+      {/* Initial loading skeleton */}
       {loading && !data && <HomeSkeleton />}
 
-      {/* Error with no data to show */}
+      {/* Full-page error when no data available */}
       {!loading && error && !data && (
         <ErrorState message={error} onRetry={refresh} />
       )}
 
-      {/* Content */}
+      {/* Main content */}
       {data && (
         <ScrollView
           contentContainerStyle={styles.scroll}
@@ -91,16 +122,46 @@ export const HomeScreen: React.FC = () => {
 
           <MaintenanceNoticeCard message={data.maintenanceMessage} />
 
-          <ApprovalQueue
-            items={data.approvalQueue}
+          {/* Approval queue trigger — opens bottom sheet on press */}
+          <ApprovalQueueTrigger
             count={data.approvalQueueCount}
-            processingIds={processingVisitors}
-            onApprove={handleApprove}
-            onReject={handleReject}
-            onCallGuard={handleCallGuard}
+            items={data.approvalQueue}
+            onPress={openQueueSheet}
           />
 
-          {/* Non-blocking error banner (data is stale but visible) */}
+          {/* QR Code Entry Banner */}
+          <QRCodeBanner onPress={handleQREntry} />
+
+          {/* First advertisement */}
+          {data.advertisements && data.advertisements[0] && (
+            <AdvertisementCard ad={data.advertisements[0]} />
+          )}
+
+          {/* Community Posts */}
+          {data.communityPosts && data.communityPosts.length > 0 && (
+            <>
+              <SectionHeader
+                title="Community Posts"
+                actionLabel="New Post"
+                actionIcon="create-outline"
+                onAction={handleNewPost}
+              />
+              {data.communityPosts.map((post, index) => (
+                <React.Fragment key={post.postId}>
+                  <CommunityPostCard post={post} />
+                  {/* Inject second ad after every 2nd post */}
+                  {index === 1 && data.advertisements && data.advertisements[1] && (
+                    <AdvertisementCard ad={data.advertisements[1]} />
+                  )}
+                </React.Fragment>
+              ))}
+            </>
+          )}
+
+          {/* SOS Emergency Banner */}
+          <SOSBanner onPress={handleSOS} />
+
+          {/* Non-blocking stale error banner */}
           {error && (
             <View style={styles.staleErrorBanner}>
               <Ionicons name="warning-outline" size={14} color={colors.warning} />
@@ -108,6 +169,20 @@ export const HomeScreen: React.FC = () => {
             </View>
           )}
         </ScrollView>
+      )}
+
+      {/* Approval Queue Bottom Sheet (rendered outside ScrollView so it overlays everything) */}
+      {data && (
+        <ApprovalQueueBottomSheet
+          visible={queueSheetVisible}
+          items={data.approvalQueue}
+          count={data.approvalQueueCount}
+          processingIds={processingVisitors}
+          onApprove={handleApprove}
+          onReject={handleReject}
+          onCallGuard={handleCallGuard}
+          onClose={closeQueueSheet}
+        />
       )}
     </ScreenWrapper>
   );
