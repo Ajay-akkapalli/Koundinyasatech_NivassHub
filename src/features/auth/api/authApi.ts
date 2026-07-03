@@ -15,6 +15,12 @@ export const authApi = {
   login: (data: LoginFormData) =>
     post<AuthResponse>(`${BASE}/login`, data),
 
+  sendOtp: (countryCode: string, mobileNumber: string) =>
+  post<OtpResponse>(`${BASE}/send-otp`, {
+    countryCode,
+    mobileNumber,
+  }),
+
   register: (data: RegisterFormData) =>
     post<AuthResponse>(`${BASE}/register`, data),
 
