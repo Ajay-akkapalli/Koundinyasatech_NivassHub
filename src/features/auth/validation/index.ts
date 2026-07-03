@@ -10,43 +10,53 @@ import { OTP_LENGTH, MIN_PASSWORD_LENGTH } from '../constants';
 
 export function validateLogin(data: LoginFormData): LoginFormErrors {
   const errors: LoginFormErrors = {};
-  if (!data.email.trim()) errors.email = 'Email is required.';
-  else if (!REGEX.EMAIL.test(data.email)) errors.email = 'Enter a valid email address.';
-  if (!data.password) errors.password = 'Password is required.';
-  else if (data.password.length < MIN_PASSWORD_LENGTH)
+  const email = (data.email ?? '').trim();
+  const password = data.password ?? '';
+  if (!email) errors.email = 'Email is required.';
+  else if (!REGEX.EMAIL.test(email)) errors.email = 'Enter a valid email address.';
+  if (!password) errors.password = 'Password is required.';
+  else if (password.length < MIN_PASSWORD_LENGTH)
     errors.password = `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`;
   return errors;
 }
 
 export function validateRegister(data: RegisterFormData): RegisterFormErrors {
   const errors: RegisterFormErrors = {};
-  if (!data.name.trim()) errors.name = 'Full name is required.';
-  if (!data.email.trim()) errors.email = 'Email is required.';
-  else if (!REGEX.EMAIL.test(data.email)) errors.email = 'Enter a valid email address.';
-  if (!data.phone.trim()) errors.phone = 'Phone number is required.';
-  else if (!REGEX.PHONE_IN.test(data.phone)) errors.phone = 'Enter a valid 10-digit Indian phone number.';
-  if (!data.flat.trim()) errors.flat = 'Flat number is required.';
-  if (!data.block.trim()) errors.block = 'Block is required.';
-  if (!data.password) errors.password = 'Password is required.';
-  else if (data.password.length < MIN_PASSWORD_LENGTH)
+  const fullName = (data.fullName ?? '').trim();
+  const email = (data.email ?? '').trim();
+  const mobileNumber = (data.mobileNumber ?? '').trim();
+  const address = (data.address ?? '').trim();
+  const password = data.password ?? '';
+  const confirmPassword = data.confirmPassword ?? '';
+
+  if (!fullName) errors.fullName = 'Full name is required.';
+  if (!email) errors.email = 'Email is required.';
+  else if (!REGEX.EMAIL.test(email)) errors.email = 'Enter a valid email address.';
+  if (!mobileNumber) errors.mobileNumber = 'Mobile number is required.';
+  else if (!REGEX.PHONE_IN.test(mobileNumber)) errors.mobileNumber = 'Enter a valid 10-digit mobile number.';
+  if (!address) errors.address = 'Address is required.';
+  if (!password) errors.password = 'Password is required.';
+  else if (password.length < MIN_PASSWORD_LENGTH)
     errors.password = `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`;
-  if (!data.confirmPassword) errors.confirmPassword = 'Please confirm your password.';
-  else if (data.password !== data.confirmPassword) errors.confirmPassword = 'Passwords do not match.';
+  if (!confirmPassword) errors.confirmPassword = 'Please confirm your password.';
+  else if (password !== confirmPassword) errors.confirmPassword = 'Passwords do not match.';
   return errors;
 }
 
 export function validateForgotPassword(data: ForgotPasswordFormData): ForgotPasswordFormErrors {
   const errors: ForgotPasswordFormErrors = {};
-  if (!data.email.trim()) errors.email = 'Email is required.';
-  else if (!REGEX.EMAIL.test(data.email)) errors.email = 'Enter a valid email address.';
+  const email = (data.email ?? '').trim();
+  if (!email) errors.email = 'Email is required.';
+  else if (!REGEX.EMAIL.test(email)) errors.email = 'Enter a valid email address.';
   return errors;
 }
 
 export function validateOtp(data: OtpFormData): OtpFormErrors {
   const errors: OtpFormErrors = {};
-  if (!data.otp.trim()) errors.otp = 'OTP is required.';
-  else if (data.otp.length !== OTP_LENGTH) errors.otp = `OTP must be exactly ${OTP_LENGTH} digits.`;
-  else if (!/^\d+$/.test(data.otp)) errors.otp = 'OTP must contain digits only.';
+  const otp = (data.otp ?? '').trim();
+  if (!otp) errors.otp = 'OTP is required.';
+  else if (otp.length !== OTP_LENGTH) errors.otp = `OTP must be exactly ${OTP_LENGTH} digits.`;
+  else if (!/^\d+$/.test(otp)) errors.otp = 'OTP must contain digits only.';
   return errors;
 }
 

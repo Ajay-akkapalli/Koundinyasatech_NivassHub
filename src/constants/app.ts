@@ -1,13 +1,15 @@
 export const ROUTES = {
   SPLASH: '/splash',
-  DASHBOARD: '/dashboard',
-  RESIDENTS: '/dashboard/residents',
-  VISITORS: '/dashboard/visitors',
-  MAINTENANCE: '/dashboard/maintenance',
-  AMENITIES: '/dashboard/amenities',
-  NOTICES: '/dashboard/notices',
-  SETTINGS: '/dashboard/settings',
-  PROFILE: '/profile',
+  TABS: '/(tabs)',
+  DASHBOARD: '/(tabs)',
+  RESIDENTS: '/(tabs)/residents',
+  VISITORS: '/(tabs)/visitors',
+  MAINTENANCE: '/(tabs)/maintenance',
+  AMENITIES: '/(tabs)/amenities',
+  NOTICES: '/(tabs)/notices',
+  SETTINGS: '/(tabs)/settings',
+  PROFILE: '/(tabs)/profile',
+  SOCIETY: '/society',
 } as const;
 
 export const STRINGS = {

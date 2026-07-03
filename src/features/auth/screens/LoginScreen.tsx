@@ -1,342 +1,135 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  SafeAreaView,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Alert,
-  StyleSheet,
-} from "react-native";
-import { router } from "expo-router";
+import React, { useCallback } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
+import { AuthScreenWrapper } from '@components/layout/AuthScreenWrapper';
+import { AuthHeader } from '../components/AuthHeader';
+import { AuthInput } from '../components/AuthInput';
+import { Button } from '@components/ui/Button';
+import { useAuth } from '../hooks/useAuth';
+import { useAuthForm } from '../hooks/useAuthForm';
+import { validateLogin } from '../validation';
+import { AUTH_ROUTES } from '../constants';
+import type { LoginFormData } from '../types';
 
-export const LoginScreen: React.FC = () => {
-  const [identifier, setIdentifier] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-
-  const validateForm = (): boolean => {
-    const value = identifier.trim();
-
-    if (!value) {
-      Alert.alert("Validation", "Please enter Email or Mobile Number.");
-      return false;
-    }
-
-    if (!password.trim()) {
-      Alert.alert("Validation", "Please enter Password.");
-      return false;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const mobileRegex = /^[6-9]\d{9}$/;
-
-    if (!emailRegex.test(value) && !mobileRegex.test(value)) {
-      Alert.alert(
-        "Validation",
-        "Please enter a valid Email or 10-digit Mobile Number."
-      );
-      return false;
-    }
-
-    if (password.length < 7) {
-      Alert.alert(
-        "Validation",
-        "Password must contain at least 7 characters."
-      );
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleLogin = (): void => {
-    if (!validateForm()) return;
-
-    Alert.alert("Success", "Login Successful!", [
-      {
-        text: "OK",
-        onPress: () => {
-          router.replace("/(tabs)");
-        },
-      },
-    ]);
-  };
-
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
-        <ScrollView
-          contentContainerStyle={styles.scrollContainer}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.container}>
-            {/* Logo */}
-            <View style={styles.logoContainer}>
-              <View style={styles.logoCircle}>
-                <Text style={styles.logoText}>N</Text>
-              </View>
-
-              <Text style={styles.appName}>NivassHub</Text>
-              <Text style={styles.welcomeText}>
-                Welcome back! Please login to continue.
-              </Text>
-            </View>
-
-            {/* Card */}
-            <View style={styles.card}>
-              <Text style={styles.heading}>Login</Text>
-
-              <Text style={styles.label}>Email / Mobile Number</Text>
-
-              <TextInput
-                style={styles.input}
-                placeholder="Enter Email or Mobile Number"
-                placeholderTextColor="#9CA3AF"
-                value={identifier}
-                onChangeText={setIdentifier}
-                autoCapitalize="none"
-                keyboardType="default"
-              />
-
-              <Text style={styles.label}>Password</Text>
-
-              <View style={styles.passwordContainer}>
-                <TextInput
-                  style={styles.passwordInput}
-                  placeholder="Enter Password"
-                  placeholderTextColor="#9CA3AF"
-                  secureTextEntry={!showPassword}
-                  value={password}
-                  onChangeText={setPassword}
-                />
-
-                <TouchableOpacity
-                  onPress={() => setShowPassword(!showPassword)}
-                >
-                  <Text style={styles.showText}>
-                    {showPassword ? "Hide" : "Show"}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-
-              <TouchableOpacity
-                style={styles.forgotContainer}
-                onPress={() => router.push("/(auth)/forgot-password")}
-              >
-                <Text style={styles.forgotText}>
-                  Forgot Password?
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.loginButton}
-                onPress={handleLogin}
-              >
-                <Text style={styles.loginButtonText}>
-                  Login
-                </Text>
-              </TouchableOpacity>
-
-              <View style={styles.bottomContainer}>
-                <Text style={styles.bottomText}>
-                  Don't have an account?
-                </Text>
-
-                <TouchableOpacity
-                  onPress={() => router.push("/(auth)/register")}
-                >
-                  <Text style={styles.registerText}>
-                    Register
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
-  );
+const INITIAL_VALUES: LoginFormData = {
+  email: '',
+  password: '',
 };
 
-export default LoginScreen;
+export function LoginScreen() {
+  const router = useRouter();
+  const { login, loading, error } = useAuth();
+
+  const handleLogin = useCallback(
+    async (values: LoginFormData): Promise<boolean> => {
+      const success = await login(values);
+      if (success) {
+        router.replace('/(tabs)');
+      }
+      return success;
+    },
+    [login, router],
+  );
+
+  const { values, errors, submitting, handleChange, handleBlur, handleSubmit } =
+    useAuthForm<LoginFormData>({
+      initialValues: INITIAL_VALUES,
+      validate: validateLogin,
+      onSubmit: handleLogin,
+    });
+
+  return (
+    <AuthScreenWrapper>
+      <AuthHeader
+        title="Sign In"
+        subtitle="Welcome back! Enter your credentials to continue."
+      />
+
+      {error ? <Text style={styles.globalError}>{error}</Text> : null}
+
+      <AuthInput
+        label="Email"
+        value={values.email}
+        onChangeText={(v) => handleChange('email', v)}
+        onBlur={() => handleBlur('email')}
+        error={errors.email}
+        keyboardType="email-address"
+        autoComplete="email"
+        textContentType="emailAddress"
+        returnKeyType="next"
+      />
+
+      <AuthInput
+        label="Password"
+        value={values.password}
+        onChangeText={(v) => handleChange('password', v)}
+        onBlur={() => handleBlur('password')}
+        error={errors.password}
+        isPassword
+        autoComplete="password"
+        textContentType="password"
+        returnKeyType="done"
+        onSubmitEditing={handleSubmit}
+      />
+
+      <TouchableOpacity
+        style={styles.forgotLink}
+        onPress={() => router.push(AUTH_ROUTES.FORGOT_PASSWORD as never)}
+        accessibilityRole="link"
+      >
+        <Text style={styles.forgotText}>Forgot Password?</Text>
+      </TouchableOpacity>
+
+      <Button
+        title="Sign In"
+        onPress={handleSubmit}
+        loading={submitting || loading}
+        style={styles.submitBtn}
+      />
+
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>Don't have an account? </Text>
+        <TouchableOpacity
+          onPress={() => router.push(AUTH_ROUTES.REGISTER as never)}
+          accessibilityRole="link"
+        >
+          <Text style={styles.footerLink}>Register</Text>
+        </TouchableOpacity>
+      </View>
+    </AuthScreenWrapper>
+  );
+}
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#F4F8FC",
+  globalError: {
+    backgroundColor: '#FEF2F2',
+    color: '#EF4444',
+    fontSize: 13,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 8,
+    marginBottom: 16,
+    textAlign: 'center',
   },
-
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: "center",
-    paddingVertical: 30,
+  forgotLink: {
+    alignSelf: 'flex-end',
+    marginBottom: 24,
+    marginTop: -4,
   },
-
-  container: {
-    flex: 1,
-    paddingHorizontal: 24,
-    justifyContent: "center",
-  },
-
-  // Logo Section
-  logoContainer: {
-    alignItems: "center",
-    marginBottom: 35,
-  },
-
-  logoCircle: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    backgroundColor: "#0A66C2",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 15,
-    elevation: 8,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-  },
-
-  logoText: {
-    fontSize: 42,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-  },
-
-  appName: {
-    fontSize: 30,
-    fontWeight: "700",
-    color: "#0A66C2",
-    marginBottom: 6,
-  },
-
-  welcomeText: {
-    fontSize: 15,
-    color: "#6B7280",
-    textAlign: "center",
-  },
-
-  // Card
-  card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 20,
-    padding: 24,
-    elevation: 6,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-  },
-
-  heading: {
-    fontSize: 28,
-    fontWeight: "700",
-    color: "#111827",
-    marginBottom: 25,
-    textAlign: "center",
-  },
-
-  label: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: "#374151",
-    marginBottom: 8,
-    marginTop: 10,
-  },
-
-  input: {
-    height: 55,
-    borderWidth: 1,
-    borderColor: "#D6E4F0",
-    borderRadius: 12,
-    backgroundColor: "#F9FBFD",
-    paddingHorizontal: 16,
-    fontSize: 16,
-    color: "#111827",
-  },
-
-  passwordContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#D6E4F0",
-    borderRadius: 12,
-    backgroundColor: "#F9FBFD",
-    height: 55,
-    paddingHorizontal: 16,
-  },
-
-  passwordInput: {
-    flex: 1,
-    fontSize: 16,
-    color: "#111827",
-  },
-
-  showText: {
-    color: "#0A66C2",
-    fontWeight: "700",
-    fontSize: 14,
-  },
-
-  forgotContainer: {
-    alignItems: "flex-end",
-    marginTop: 14,
-  },
-
   forgotText: {
-    color: "#0A66C2",
-    fontSize: 14,
-    fontWeight: "600",
+    fontSize: 13,
+    color: '#1A73E8',
+    fontWeight: '500',
   },
-
-  loginButton: {
-    backgroundColor: "#0A66C2",
-    height: 55,
-    borderRadius: 14,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 28,
-    elevation: 3,
+  submitBtn: {
+    marginTop: 4,
   },
-
-  loginButtonText: {
-    color: "#FFFFFF",
-    fontSize: 18,
-    fontWeight: "700",
-  },
-
-  bottomContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginTop: 24,
   },
-
-  bottomText: {
-    color: "#6B7280",
-    fontSize: 15,
-  },
-
-  registerText: {
-    color: "#0A66C2",
-    fontWeight: "700",
-    fontSize: 15,
-    marginLeft: 5,
-  },
+  footerText: { fontSize: 14, color: '#6B7280' },
+  footerLink: { fontSize: 14, color: '#1A73E8', fontWeight: '600' },
 });

@@ -26,17 +26,15 @@ async function persistUser(user: User): Promise<void> {
 }
 
 export const authService = {
-  async login(data: LoginFormData): Promise<AuthResponse> {
-    const response = await authApi.login(data);
-    await persistToken(response.token);
-    await persistUser(response.user);
+  async register(data: RegisterFormData): Promise<AuthResponse> {
+    const response = await authApi.register(data);
+    await Promise.all([persistToken(response.token), persistUser(response.user)]);
     return response;
   },
 
-  async register(data: RegisterFormData): Promise<AuthResponse> {
-    const response = await authApi.register(data);
-    await persistToken(response.token);
-    await persistUser(response.user);
+  async login(data: LoginFormData): Promise<AuthResponse> {
+    const response = await authApi.login(data);
+    await Promise.all([persistToken(response.token), persistUser(response.user)]);
     return response;
   },
 
@@ -56,7 +54,7 @@ export const authService = {
     try {
       await authApi.logout();
     } catch {
-      // best-effort: clear local state regardless
+      // best-effort: clear local state even if the server call fails
     }
     await Promise.all(
       Object.values(AUTH_STORAGE_KEYS).map((key) => removeData(key)),

@@ -5,16 +5,22 @@ import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
 import { SPLASH } from '@constants/dimensions';
 
-export default function SplashBlankScreen(): React.JSX.Element {
+/**
+ * Entry point of the splash flow.
+ * A single brief blank screen before the animation — avoids the double
+ * white-flash that occurred when index.tsx → loading.tsx both showed
+ * identical empty screens before anything was drawn.
+ */
+export default function SplashEntryScreen(): React.JSX.Element {
   const router = useRouter();
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      router.replace('/splash/loading');
+      router.replace('/splash/animation');
     }, SPLASH.SCREEN_1_DURATION);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [router]);
 
   return (
     <SafeAreaView style={styles.container}>

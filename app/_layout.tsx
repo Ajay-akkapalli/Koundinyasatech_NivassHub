@@ -15,6 +15,14 @@ export default function RootLayout() {
             <Stack.Screen name="(auth)" />
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="society" />
+            <Stack.Screen
+              name="search"
+              options={{
+                animation: 'fade_from_bottom',
+                gestureEnabled: true,
+                gestureDirection: 'vertical',
+              }}
+            />
             <Stack.Screen name="+not-found" />
           </Stack>
         </StoreProvider>
